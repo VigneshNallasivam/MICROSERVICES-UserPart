@@ -23,12 +23,12 @@ public class UserService implements IUserService
     @Autowired
     UserRepository userRepo;
     @Override
-    public UserModel register(UserDTO userDTO) throws Exception
+    public UserModel register(UserDTO userDTO)
     {
         UserModel user=new UserModel(userDTO);
         String token=tokenUtil.createToken(user.getUserId());
         userRepo.save(user);
-        emailSenderService.sendEmail(user.getEmail(),"Register Book Store", "Hai...."+user.getFirstName()+"\n You have been successfully registered!\n\n Your registered details are:\n\n User Id:  "+user.getUserId()+"\n First Name:  "+user.getFirstName()+"\n Last Name:  "+user.getLastName()+"\n Email:  "+user.getEmail()+"\n Address:  "+user.getAddress()+"\n DOB:  "+user.getDob()+"\n Token:  "+token);
+        emailSenderService.sendEmail(user.getEmail(),"Book Store Registration", "Hai...."+user.getFirstName()+"\n You have been successfully registered!\n\n Your registered details are:\n\n User Id:  "+user.getUserId()+"\n First Name:  "+user.getFirstName()+"\n Last Name:  "+user.getLastName()+"\n Email:  "+user.getEmail()+"\n Address:  "+user.getAddress()+"\n DOB:  "+user.getDob()+"\n Token:  "+token);
         return user;
     }
     @Override
@@ -39,40 +39,56 @@ public class UserService implements IUserService
     }
 
     @Override
-    public Optional<UserModel> getById(long id){
+    public Optional<UserModel> getById(long id)
+    {
         Optional<UserModel> user=userRepo.findById(id);
-        if (user.isPresent()){
+        if (user.isPresent())
+        {
             return user;
-        }else {
+        }
+        else
+        {
             throw new UserException("Sorry! We cannot find the user id: "+id);
         }
     }
     @Override
-    public UserModel getByEmailID(String email){
+    public UserModel getByEmailID(String email)
+    {
         UserModel userList=userRepo.findByEmail(email)  ;
-        if(userList!=null){
+        if(userList!=null)
+        {
             return userList;
 
-        }else {
+        }
+        else
+        {
             throw new UserException("Sorry! We can not find the user email: "+email);
         }
     }
     @Override
-    public UserModel forgotPassword(UserDTO userDTO, String email){
-        UserModel user=userRepo.findByEmail(email);
-        if (user!=null){
-            user.setPassword(userDTO.getPassword());
+    public UserModel forgotPassword(LoginDTO loginDTO)
+    {
+        UserModel user=userRepo.findByEmail(loginDTO.getEmail());
+        if (user!=null)
+        {
+            user.setPassword(loginDTO.getPassword());
             userRepo.save(user);
             emailSenderService.sendEmail(user.getEmail(),"Password Updated", "Hii...."+user.getFirstName()+" Your Password has been updated!\n\n Your New password: "+user.getPassword());
             return user;
-        }else {
-            throw new UserException("Sorry! We can not find the user email: "+email);
+        }
+        else
+        {
+            throw new UserException("Sorry! We can not find the user email");
         }
     }
+
+
     @Override
-    public UserModel updateUserByEmail(UserDTO userDTO, String email){
-        UserModel user=userRepo.findByEmail(email);
-        if(userRepo.findByEmail(email)!=null) {
+    public UserModel updateUserByEmail(UserDTO userDTO)
+    {
+        UserModel user=userRepo.findByEmail(userDTO.getEmail());
+        if(user!=null)
+        {
             user.setFirstName(userDTO.getFirstName());
             user.setLastName(userDTO.getLastName());
             user.setEmail(userDTO.getEmail());
@@ -80,19 +96,24 @@ public class UserService implements IUserService
             user.setDob(userDTO.getDob());
             user.setPassword(userDTO.getPassword());
             userRepo.save(user);
-            emailSenderService.sendEmail(user.getEmail(), "Your details are updated!", "Hii...." + user.getFirstName() + " Your updated details are:\n\n First Name:  " + user.getFirstName() + "\n Last Name:  " + user.getLastName() + "\n Email:  " + user.getEmail() + "\n Address:  " + user.getAddress() + "\n DOB:  " + user.getDob());
             return user;
-        }else {
-            throw new UserException("Sorry! We can not find entered email: "+email);
+        }
+        else
+        {
+            throw new UserException("Sorry! We can not find entered email");
         }
     }
     @Override
-    public String login(LoginDTO loginDTO){
+    public String login(LoginDTO loginDTO)
+    {
         Optional<UserModel> user= Optional.ofNullable(userRepo.findByEmail(loginDTO.getEmail()));
-        if (user.isPresent() && user.get().getPassword().equals(loginDTO.getPassword()) ){
+        if (user.isPresent() && user.get().getPassword().equals(loginDTO.getPassword()) )
+        {
             emailSenderService.sendEmail(user.get().getEmail(),"Logged in Successfully!", "Hii...."+user.get().getFirstName()+"\n\n You have successfully logged in into Book Store App!");
             return "Congratulations!! You have logged in successfully!";
-        }else {
+        }
+        else
+        {
             throw new UserException("Sorry! Email or Password is incorrect!");
         }
     }
@@ -110,10 +131,10 @@ public class UserService implements IUserService
         }
     }
     @Override
-    public UserModel changePassword(LoginDTO loginDTO, String email)
+    public UserModel changePassword(LoginDTO loginDTO)
     {
-        UserModel userModel = userRepo.findByEmail(email);
-        if(userRepo.findByEmail(email)!=null)
+        UserModel userModel = userRepo.findByEmail(loginDTO.getEmail());
+        if(userModel!=null)
         {
             userModel.setPassword(loginDTO.getPassword());
             userRepo.save(userModel);
@@ -129,9 +150,8 @@ public class UserService implements IUserService
     public UserModel updateById(UserDTO userDTO, long id)
     {
         UserModel userModel = userRepo.findById(id).get();
-        if(userRepo.findById(id).isPresent())
+        if(userModel!=null)
         {
-            userModel.setUserId(userDTO.getUserId());
             userModel.setFirstName(userDTO.getFirstName());
             userModel.setLastName(userDTO.getLastName());
             userModel.setEmail(userModel.getEmail());
@@ -141,9 +161,27 @@ public class UserService implements IUserService
             userRepo.save(userModel);
             return userModel;
         }
-        else {
+            else
+        {
             throw new UserException("Entered id is not found!!");
         }
+    }
+    @Override
+    public UserModel getByToken(String token)
+    {
+        Long userId = tokenUtil.decodeToken(token);
+        Optional<UserModel> userModel = userRepo.findById(userId);
+        return userModel.get();
 
     }
+
+    @Override
+    public UserModel abc(String token)
+    {
+        Long userId = tokenUtil.decodeToken(token);
+        UserModel userModel = userRepo.findById(userId).get();
+        System.out.println(userModel);
+        return userModel;
+    }
+
 }

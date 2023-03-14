@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class TokenUtil
 {
     private static final String TOKEN_SECRET = "GateKeeper";
-    public String createToken(long id)
+    public String createToken(Long id)
     {
         try
         {
@@ -33,9 +33,9 @@ public class TokenUtil
         }
         return null;
     }
-    public long decodeToken(String token)
+    public Long decodeToken(String token)
     {
-        long userid;
+        Long userid;
         Verification verification = null;
         try
         {
@@ -48,7 +48,7 @@ public class TokenUtil
         JWTVerifier jwtverifier = verification.build();
         DecodedJWT decodedjwt=jwtverifier.verify(token);
         Claim claim=decodedjwt.getClaim("user_id");
-        userid=claim.asInt();
+        userid= claim.asLong();
         return userid;
     }
 }

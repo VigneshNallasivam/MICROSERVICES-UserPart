@@ -37,6 +37,12 @@ public class UserController
         ResponseUserDTO responseUserDTO =new ResponseUserDTO("User-ID Found!",user);
         return new ResponseEntity<>(responseUserDTO,HttpStatus.FOUND);
     }
+    @GetMapping("/getByToken/{token}")
+    public ResponseEntity<ResponseUserDTO> getByToken(@PathVariable String token){
+        UserModel user=userService.getByToken(token);
+        ResponseUserDTO responseUserDTO =new ResponseUserDTO("User-Details Found!",user);
+        return new ResponseEntity<>(responseUserDTO,HttpStatus.FOUND);
+    }
     @GetMapping("/getByEmailID/{email}")
     public ResponseEntity<ResponseUserDTO> getByEmailID(@PathVariable String email)
     {
@@ -45,9 +51,9 @@ public class UserController
         return new ResponseEntity<>(responseUserDTO,HttpStatus.FOUND);
     }
     @PutMapping("/forgotPassword/{email}")
-    public ResponseEntity<ResponseUserDTO> forgotPassword(@Valid @RequestBody UserDTO userDTO, @PathVariable String email)
+    public ResponseEntity<ResponseUserDTO> forgotPassword(@Valid @RequestBody LoginDTO loginDTO, @PathVariable String email)
     {
-        UserModel user=userService.forgotPassword(userDTO,email);
+        UserModel user=userService.forgotPassword(loginDTO);
         ResponseUserDTO responseUserDTO =new ResponseUserDTO("Password Changed successfully!",user);
         return new ResponseEntity<>(responseUserDTO,HttpStatus.ACCEPTED);
     }
@@ -63,14 +69,14 @@ public class UserController
     @PutMapping("/changePassword/{email}")
     public ResponseEntity<ResponseUserDTO> changePassword(@Valid @RequestBody LoginDTO loginDTO,@PathVariable String email)
     {
-        UserModel userModel = userService.changePassword(loginDTO,email);
+        UserModel userModel = userService.changePassword(loginDTO);
         ResponseUserDTO responseUserDTO = new ResponseUserDTO("Password Changed Succesfully",userModel);
         return new ResponseEntity<>(responseUserDTO,HttpStatus.OK);
     }
     @PutMapping("/updateUserByEmail/{email}")
     public ResponseEntity<ResponseUserDTO> updateUserByEmail(@Valid @RequestBody UserDTO userDTO, @PathVariable String email)
     {
-        UserModel user=userService.updateUserByEmail(userDTO,email);
+        UserModel user=userService.updateUserByEmail(userDTO);
         ResponseUserDTO responseUserDTO =new ResponseUserDTO("Updated successfully!",user);
         return new ResponseEntity<>(responseUserDTO, HttpStatus.OK);
     }
@@ -87,5 +93,12 @@ public class UserController
         String value = userService.deleteById(id);
         ResponseUserDTO responseUserDTO = new ResponseUserDTO("User Id Deleted",value+id);
         return new ResponseEntity<>(responseUserDTO,HttpStatus.OK);
+    }
+    @GetMapping("/get1/{token}")
+    public UserModel getToken(@PathVariable String token)
+    {
+        System.out.println("Print Token..!");
+      UserModel userModel = userService.abc(token);
+      return userModel;
     }
 }

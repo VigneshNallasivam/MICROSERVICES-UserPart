@@ -18,15 +18,19 @@ public interface IUserService
 
     UserModel getByEmailID(String email);
 
-    UserModel updateUserByEmail(UserDTO userDTO, String email);
+    UserModel updateUserByEmail(UserDTO userDTO);
 
-    UserModel forgotPassword(UserDTO userDTO, String email);
+    UserModel forgotPassword(LoginDTO loginDTO);
 
     String login(LoginDTO loginDTO);
 
     String deleteById(long id);
 
-    UserModel changePassword(LoginDTO loginDTO, String email);
+    UserModel changePassword(LoginDTO loginDTO);
 
     UserModel updateById(UserDTO userDTO, long id);
+
+    UserModel getByToken(String token);
+
+    UserModel abc(String token);
 }

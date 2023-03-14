@@ -4,6 +4,7 @@ import com.spring.userpart.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Columns;
 
 import java.time.LocalDate;
 @Entity
@@ -24,7 +25,6 @@ public class UserModel
     private String password;
     public UserModel(UserDTO userDTO)
     {
-        this.userId=userDTO.getUserId();
         this.firstName=userDTO.getFirstName();
         this.lastName=userDTO.getLastName();
         this.email=userDTO.getEmail();

@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserDTO
 {
-    private long userId;
     @Pattern(regexp = "^[A-Z]{1}[a-z]{2,}$",message = "First name should start with capital letter")
     private String firstName;
     @Pattern(regexp = "^[A-Z]{1}[a-z]{2,}$",message = "Last name should start with capital letter")
